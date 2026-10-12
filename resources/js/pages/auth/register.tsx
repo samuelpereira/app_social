@@ -1,5 +1,8 @@
 import { Form, Head } from '@inertiajs/react';
+import { GoogleSignInButton } from '@/components/google-sign-in-button';
+import { SlushSignInButton } from '@/components/slush-sign-in-button';
 import InputError from '@/components/input-error';
+import { enokiConfigured } from '@/lib/enoki';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -99,6 +102,14 @@ export default function Register({ passwordRules }: Props) {
                                 {processing && <Spinner />}
                                 Create account
                             </Button>
+                        </div>
+
+                        <div className="grid gap-4">
+                            <div className="text-center text-sm text-muted-foreground">
+                                or
+                            </div>
+                            {enokiConfigured && <GoogleSignInButton />}
+                            <SlushSignInButton />
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">

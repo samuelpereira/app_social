@@ -7,6 +7,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -15,9 +17,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 /**
  * @property int $id
  * @property string $name
- * @property string $email
+ * @property string|null $email
  * @property Carbon|null $email_verified_at
- * @property string $password
+ * @property string|null $password
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
@@ -44,5 +46,37 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * A wallet account has no email address to verify.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if ($this->email === null) {
+            return true;
+        }
+
+        return $this->email_verified_at !== null;
+    }
+
+    /**
+     * Get the OAuth identities linked to this user.
+     *
+     * @return HasMany<OauthIdentity, $this>
+     */
+    public function oauthIdentities(): HasMany
+    {
+        return $this->hasMany(OauthIdentity::class);
+    }
+
+    /**
+     * Get the Slush wallet that signs this user in.
+     *
+     * @return HasOne<Wallet, $this>
+     */
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
     }
 }

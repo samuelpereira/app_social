@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: '.'
+      args:
+        uid: ${UID}
+    container_name: ${DOCKER_NAME}-app
+    environment:
+      - APACHE_RUN_USER=#${UID}
+      - APACHE_RUN_GROUP=#${UID}
+    volumes:
+      - .:/var/www/html:delegated
+    ports:
+      - 8080:80
+    networks:
+      backend:
+
+  mysql-db:
+    image: mariadb:11.8.6
+    container_name: ${DOCKER_NAME}-db
+    volumes:
+      - ./run/var:/var/lib/mysql:delegated
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 3380:3306
+    networks:
+      backend:
+
+networks:
+  backend:
+    name: backend-network
+    external: true
